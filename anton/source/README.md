@@ -1,6 +1,1 @@
-TODO:
-
-1) convolution
-2) Hankel transform
-...
-
+Only convolution.cpp and functions.cpp are up-to-date.
