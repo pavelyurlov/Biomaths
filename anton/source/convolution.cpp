@@ -1,7 +1,16 @@
+/* Part of this is forked from https://github.com/GadS06/NumericalMethod
+ */
+
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <complex>
 
+
+/* TODO:
+ * download gsl (GNU Scientific Library)
+ * and find out what specialfunctions.h is
+ */
 
 #include <specialfunctions.h>
 #include <gsl/gsl_dht.h>
@@ -56,7 +65,7 @@ vec hankel_2D_gsl(vec f, double A)
 
 	for (size_t i = 0; i < the_size / 2 + the_size % 2; i++)
 	{
-		res[the_size / 2 + the_size % 2 - i - 1] = res[the_size / 2 + i] = the_out[i];
+		res(the_size / 2 + the_size % 2 - i - 1) = res(the_size / 2 + i) = the_out[i];
 	}
 	return res;
 }
