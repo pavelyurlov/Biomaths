@@ -2,10 +2,12 @@
 с результатами своих расчётов на matlab (просто чтобы убедиться, что там лежит действительно то, что нужно) и
 получившиеся на matlabе «свои» данные и данные вычислений на c++.
 
-Если что, compare_mong_matlab запускается примерно так:\n
+Если что, compare_mong_matlab запускается примерно так:
+
 ./compare_among_matlab <my_N1> <my_N2> <anton_N1> <anton_N2> <low_x> <high_x> <low_y> <high_y> <ccto или hm> <dim(1, 2 или 3)>
 
-А compare_cpp_vs_matlab так:\n
+А compare_cpp_vs_matlab так:
+
 ./compare_cpp_vs_matlab <ccto или hm> <dim(1, 2 или 3)>
 
 
