@@ -1,0 +1,11 @@
+1 0 : -100.812
+1 0 : -145.33
+2 0 : -1626.78
+2 0 : 1208.84
+count1 = 2
+count2 = 2
+total = 4
+dim = 3
+hm
+void surf_plot(const vec&, const vec&, const mat&, const string&)
+void surf_plot(const vec&, const vec&, const mat&, const string&)
