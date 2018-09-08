@@ -2,4 +2,4 @@ set term png size 1920, 1080
 set output "c++_vs_matlab_hm_d3.png"
 set title "Error C++ vs Matlab: hm D3, in %"
 set view 30, 45, 1, 1
-splot 'c++_vs_matlab_hmD3_E1.data' nonuniform matrix w l, 'c++_vs_matlab_hmD3_E2.data' nonuniform matrix w l
+splot 'c++_vs_matlab_hmD3_N1.data' nonuniform matrix w l, 'c++_vs_matlab_hmD3_N2.data' nonuniform matrix w l
