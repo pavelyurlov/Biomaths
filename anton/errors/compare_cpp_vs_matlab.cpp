@@ -80,8 +80,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    sprintf(outname1, "c++_vs_matlab_%sD%d_E1.data", argv[1], dim);
-    sprintf(outname2, "c++_vs_matlab_%sD%d_E2.data", argv[1], dim);
+    sprintf(outname1, "c++_vs_matlab_%sD%d_N1.data", argv[1], dim);
+    sprintf(outname2, "c++_vs_matlab_%sD%d_N2.data", argv[1], dim);
     sprintf(incpp1, "c++_%sD%d_N1.data", argv[1], dim);
     sprintf(incpp2, "c++_%sD%d_N2.data", argv[1], dim);
     sprintf(inmatlab1, "matlab_%sD%d_N1.txt", argv[1], dim);

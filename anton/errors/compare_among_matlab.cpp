@@ -128,12 +128,12 @@ int main(int argc, char** argv) {
     hm = "hm";
     if (argv[9] == ccto) {
         cout << ccto << endl;
-        sprintf(str1, "cctoD%d_E1.data", dim);
-        sprintf(str2, "cctoD%d_E2.data", dim);
+        sprintf(str1, "cctoD%d_N1.data", dim);
+        sprintf(str2, "cctoD%d_N2.data", dim);
     } else if (argv[9] == hm) {
         cout << hm << endl;
-        sprintf(str1, "hmD%d_E1.data", dim);
-        sprintf(str2, "hmD%d_E2.data", dim);
+        sprintf(str1, "hmD%d_N1.data", dim);
+        sprintf(str2, "hmD%d_N2.data", dim);
     } else {
         cout << "neither ccto, nor hm\n";
         return 1;
