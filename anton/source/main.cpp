@@ -8,12 +8,6 @@
 #include <iostream>
 
 
-/* TODO:
- * download gsl (GNU Scientific Library)
- * and find out what specialfunctions.h is
-
-#include <specialfunctions.h>
-*/
 #include <gsl/gsl_dht.h>
 
 
@@ -113,7 +107,9 @@ vec conv_fourier_1D(const vec &f, const vec &g) {
 
     // std::cout << __PRETTY_FUNCTION__ << std::endl;
 
-    /*
+    /* This is the same as previous:
+    
+    
     int const nf = f.size();
     int const ng = g.size();
     int const n  = nf + ng - 1;
@@ -129,7 +125,9 @@ vec conv_fourier_1D(const vec &f, const vec &g) {
     */
 
 
-/*
+/*  Version using Eigen Library:
+
+
     Eigen::VectorXcd ca, cb;
     vec res;
     static Eigen::FFT<double> fft;
@@ -251,10 +249,6 @@ vec normpdf(const vec& x, double mu, double sigma) {
     return res;
 }
 
-/*
- * TODO:
- * normpdf for 2 and 3 dimensions
- */
 
 
 class InputSet {
@@ -300,13 +294,6 @@ OutputSet solver(
     Eigen::ArrayXd r = Eigen::ArrayXd::LinSpaced(s.N, 0, s.A);
     Eigen::ArrayXd k = PI / s.A * r;
 
-    /*
-    TODO:
-    ht - Hankel transform of order 0
-    iht - inverse Hankel transform of order 0
-    [~, I] = ht(r, r, k);
-    [~, J] = iht(r, k, r);
-    */
 
     int iter = 0;
     while (mistake > eps && iter < max_iter && mistake2 > eps2) {
@@ -409,7 +396,6 @@ vec d11_calc(InputSet& s) {
                 conv_dim(s.w12, s.D12, s.N, s.A, s.dim)) +
                 conv_dim((s.w12).cwiseProduct(s.D12), s.D12, s.N, s.A, s.dim)) +
         (1. / s.N1) * s.m1 - s.w11;
-    // right = right + (1. / s.N1) * s.m1 - s.w11;
     return right.cwiseQuotient(left);
 }
 
@@ -431,7 +417,6 @@ vec d12_calc(InputSet& s) {
                 conv_dim((s.w21).cwiseProduct(s.D12), s.D11, s.N, s.A, s.dim) +
                 conv_dim((s.w11).cwiseProduct(s.D11), s.D12, s.N, s.A, s.dim)
         ) -
-    // right -=
         s.al / 2. * s.N2 * (
             (s.D12 + 2. * ones).cwiseProduct(
                 conv_dim(s.w12, s.D22, s.N, s.A, s.dim) +
@@ -458,16 +443,15 @@ vec d22_calc(InputSet& s) {
                 conv_dim(s.w21, s.D12, s.N, s.A, s.dim)) +
                 conv_dim((s.w21).cwiseProduct(s.D12), s.D12, s.N, s.A, s.dim)) +
         (1. / s.N2) * s.m2 - s.w22;
-    // right = right + (1. / s.N2) * s.m2 - s.w22;
     return right.cwiseQuotient(left);
 }
 
 
 
 
-void plot_dim2(const vec &x, std::initializer_list<vec> y) {
+void plot_dim2(const vec &x, std::initializer_list<vec> y, const std::string &fname) {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
-    FILE *out = fopen("data", "w");
+    FILE *out = fopen(fname.data(), "w");
     for (ssize_t i = 0; i < x.size(); ++i) {
         fprintf(out, "%lf ", x(i));
         for (const auto &v : y) {
@@ -503,7 +487,7 @@ void surf_plot(const vec &x, const vec &y, const mat &z, const std::string &fnam
 
 
 
-void ccto_d1() {
+void ccto_d1_short() {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
 
     InputSet s;
@@ -558,7 +542,73 @@ void ccto_d1() {
         std::cout << i << " " << time << " " << total_time << std::endl;
     }
 
-    plot_dim2(d12, {N1_ans, N2_ans});
+    plot_dim2(d12, {N1_ans, N2_ans}, "c++_cctoD1_short.data");
+}
+
+
+
+void ccto_d1_full() {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+
+    InputSet s;
+    s.dim = 1;
+    s.N = 512;
+    s.A = 2.;
+    vec r;
+    r.setLinSpaced(s.N, 0, s.A);
+    s.h = r(1) - r(0);
+    double sm1 = 0.04;
+    s.b1 = 0.4; s.b2 = 0.4;
+    s.d1 = 0.2; s.d2 = 0.2;
+    s.d11 = s.d21 = s.d22 = 0.001; s.d12 = 0.0005;
+    double sw11 = 0.04, sw12 = 0.04, sw21 = 0.04, sw22 = 0.04;
+
+    s.m1 = s.b1 * normpdf(r, 0, sm1);
+
+    s.w11 = s.d11 * normpdf(r, 0, sw11);
+
+    s.w21 = s.d21 * normpdf(r, 0, sw21);
+    s.w22 = s.d22 * normpdf(r, 0, sw22);
+
+    s.al = 0.4;
+    s.N1 = 0.;
+    s.N2 = 0.;
+
+    vec d12;
+    d12.setLinSpaced(100, 0, 0.0015);
+    vec sm2;
+    sm2.setLinSpaced(100, 0.000001, 0.2);
+
+    mat N1_ans = mat::Zero(d12.size(), sm2.size());
+    mat N2_ans = mat::Zero(d12.size(), sm2.size());
+
+    auto start = std::chrono::steady_clock::now();
+    double total_time = 0.;
+
+    for (ssize_t i = 0; i < d12.size(); ++i) {
+        for (ssize_t j = 0; j < sm2.size(); ++j) {
+            s.w12 = d12(i) * normpdf(r, 0, sw12);
+            s.m2 = s.b2 * normpdf(r, 0, sm2(j));
+
+            s.D11 = s.D12 = s.D22 = vec::Zero(s.N);
+            s.d12 = d12(i);
+            s.N1 = s.N2 = 0.;
+
+            OutputSet res = solver(s);
+
+            N1_ans(i, j) = res.N1;
+            N2_ans(i, j) = res.N2;
+
+            auto step = std::chrono::steady_clock::now();
+            double time = std::chrono::duration_cast<std::chrono::milliseconds>(step - start).count() / 1000.;
+            total_time += time;
+            start = step;
+            std::cout << i << " " << j << " " << time << " " << total_time << std::endl;
+        }
+    }
+
+    surf_plot(d12, sm2, N1_ans, "c++_cctoD1_N1.data");
+    surf_plot(d12, sm2, N2_ans, "c++_cctoD1_N2.data");
 }
 
 
@@ -623,8 +673,8 @@ void ccto_d2() {
         }
     }
 
-    surf_plot(d12, sm2, N1_ans, "N1.data");
-    surf_plot(d12, sm2, N2_ans, "N2.data");
+    surf_plot(d12, sm2, N1_ans, "c++_cctoD2_N1.data");
+    surf_plot(d12, sm2, N2_ans, "c++_cctoD2_N2.data");
 }
 
 void ccto_d3() {
@@ -687,8 +737,8 @@ void ccto_d3() {
         }
     }
 
-    surf_plot(d12, sm2, N1_ans, "N1.data");
-    surf_plot(d12, sm2, N2_ans, "N2.data");
+    surf_plot(d12, sm2, N1_ans, "c++_cctoD3_N1.data");
+    surf_plot(d12, sm2, N2_ans, "c++_cctoD3_N2.data");
 }
 
 
@@ -754,8 +804,8 @@ void hm_d1() {
         }
     }
 
-    surf_plot(sw1, sw2, N1_ans, "N1.data");
-    surf_plot(sw1, sw2, N2_ans, "N2.data");
+    surf_plot(sw1, sw2, N1_ans, "c++_hmD1_N1.data");
+    surf_plot(sw1, sw2, N2_ans, "c++_hmD1_N2.data");
 }
 
 
@@ -822,8 +872,8 @@ void hm_d2() {
         }
     }
 
-    surf_plot(sw1, sw2, N1_ans, "N1.data");
-    surf_plot(sw1, sw2, N2_ans, "N2.data");
+    surf_plot(sw1, sw2, N1_ans, "c++_hmD2_N1.data");
+    surf_plot(sw1, sw2, N2_ans, "c++_hmD2_N2.data");
 }
 
 
@@ -890,12 +940,40 @@ void hm_d3() {
         }
     }
 
-    surf_plot(sw1, sw2, N1_ans, "N1.data");
-    surf_plot(sw1, sw2, N2_ans, "N2.data");
+    surf_plot(sw1, sw2, N1_ans, "c++_hmD3_N1.data");
+    surf_plot(sw1, sw2, N2_ans, "c++_hmD3_N2.data");
 }
 
 int main() {
-    hm_d3();
+    char type[10], int dim;
+    std::cout << "Write \"ccto\" or \"hm\" and dimension (1, 2 or 3)." << std::endl;
+    std::cin >> type >> dim;
+    std::cout << "You entered: " << type << ", " << dim << "." << std::endl;
+    if (type == "ccto") {
+        if (dim == 1) {
+	    std::cout << "Write \"full\" or \"short\"." << std::endl;
+	    char spec_type[10];
+	    std::cin >> spec_type;
+	    std::cout << "You entered: " << spec_type << "." << std::endl;
+	    if (spec_type == "short") {
+                ccto_d1_short();
+    	    } else if (spec_type == "full") {
+	        ccto_d1_full();
+	    }
+        } else if (dim == 2) {
+	    ccto_d2();
+	} else if (dim == 3) {
+            ccto_d3();
+	}
+    } else if (type == "hm") {
+	if (dim == 1) {
+	    hm_d1();
+	} else if (dim == 2) {
+	    hm_d2();
+	} else if (dim == 3) {
+	    hm_d3();
+	}
+    }
     return 0;
 }
 
