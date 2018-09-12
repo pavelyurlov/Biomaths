@@ -5,3 +5,8 @@ TODO in convolution.cpp:
 
 1. download gsl (GNU Scientific Library)
 2. find out what specialfunctions.h is.
+
+
+UPD:
+
+New code uploaded, old deleted.
