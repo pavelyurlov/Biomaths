@@ -883,7 +883,7 @@ void hm_d3() {
 
     InputSet s;
     s.N = 512;
-    s.dim = 2;
+    s.dim = 3;
     s.A = 2.;
     vec r;
     r.setLinSpaced(s.N, 0, s.A);
