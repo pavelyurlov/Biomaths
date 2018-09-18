@@ -4,22 +4,38 @@ function plot_cpp_hmD1()
     
     N1_ans = dlmread('c++_hmD1_N1.txt');
     N2_ans = dlmread('c++_hmD1_N2.txt');    
-
+    
+    sz = rows(N1_ans);
+    % assign colours
+    N1_colour(:,:,1) = zeros(sz, sz);
+    N1_colour(:,:,2) = zeros(sz, sz);
+    N1_colour(:,:,3) = zeros(sz, sz);
+    
+    N2_colour(:,:,1) = zeros(sz, sz);
+    N2_colour(:,:,2) = zeros(sz, sz);
+    N2_colour(:,:,3) = zeros(sz, sz);   
+    
+    for i=1:sz
+        for j=1:sz
+            for k=1:3
+                N1_colour(i,j,k)=calculate_colour(1,N1_ans(i,j),k);
+                N2_colour(i,j,k)=calculate_colour(2,N2_ans(i,j),k);
+            endfor
+        endfor
+    endfor
     
     figure;
     hold on;
     grid on;
-    h1 = surf(sw1, sw2, N1_ans, 'FaceColor', 'blue');
-    h2 = surf(sw1, sw2, N2_ans, 'FaceColor', 'red');
-    title('C++ HM D1 (N1 in blue, N2 in red)');
+    surf(sw1, sw2, N1_ans, N1_colour);
+    surf(sw1, sw2, N2_ans, N2_colour);
+    title('C++ HM D1 heatmap (N1 in blue, N2 in red)');
     
     set (gca (), "zlim", [-50, 250]);
     
     xlabel('sw1');
     ylabel('sw2');
     
-    
-    saveas(gcf, 'fig_cpp_hmD1.jpg');
-    
+    saveas(gcf, 'new_fig_cpp_hmD1.jpg');
     
 end
