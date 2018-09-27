@@ -1,5 +1,0 @@
-set term png size 1920, 1080
-set output "c++_vs_matlab_hm_d2.png"
-set title "Error C++ vs Matlab: hm D2, in %"
-set view 30, 45, 1, 1
-splot 'c++_vs_matlab_hmD2_N1.data' nonuniform matrix w l, 'c++_vs_matlab_hmD2_N2.data' nonuniform matrix w l

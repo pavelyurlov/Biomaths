@@ -1,5 +1,0 @@
-set term png size 1920, 1080
-set output "abs_c++_vs_matlab_ccto_d1.png"
-set title "Absolute error C++ vs Matlab (C++ - Matlab): ccto D1"
-set view 30, 45, 1, 1
-splot 'abs_c++_vs_matlab_cctoD1_N1.data' nonuniform matrix w l, 'abs_c++_vs_matlab_cctoD1_N2.data' nonuniform matrix w l
